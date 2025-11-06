@@ -5,12 +5,8 @@ langgraphの素振り
 
 ## graphlocal
 
-exp/test.shに起動コマンドと確認用コマンドがあるので参照。
-
 エージェントを動かさずにFastAPIのストリーミング処理でlanggraphのレスポンスをストリーミングするように書いている。
 
 LangGraph SDKは利用してない。
 
-## deep research agent
-
-deep researchを実行し
+## deep research agent（予定）
