@@ -37,8 +37,8 @@ def get_config() -> GraphConfig:
     """現在の設定を取得（デフォルト設定を返す）"""
     global _config
     if _config is None:
-        from config import _default_config
-        return _default_config
+        from config import get_default_graph_config
+        return get_default_graph_config()
     return _config
 
 

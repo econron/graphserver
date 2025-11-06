@@ -8,7 +8,7 @@ from functools import lru_cache
 
 from fastapi import FastAPI
 
-from config import GraphConfig
+from config import GraphConfig, AppSettings
 from graph.builder import create_graph
 from api import router, set_graph_repository
 from api.repositories.graph_repository import GraphRepository
@@ -22,18 +22,40 @@ logging.basicConfig(
 
 # ========= Configuration Injection =========
 @lru_cache
+def get_settings() -> AppSettings:
+    """
+    アプリケーション設定を取得する（lru_cacheで一度だけ読み込む）
+    
+    Returns:
+        AppSettings: アプリケーション設定オブジェクト
+    """
+    return AppSettings()
+
+
+@lru_cache
 def get_config() -> GraphConfig:
     """
-    設定を取得する（lru_cacheで一度だけ読み込む）
+    グラフ設定を取得する（lru_cacheで一度だけ読み込む）
+    後方互換性のため残していますが、get_settings().graphを使用することを推奨
     
     Returns:
         GraphConfig: グラフ設定オブジェクト
     """
-    return GraphConfig()
+    settings = get_settings()
+    return settings.graph
 
 
-# 設定を取得してグラフを作成
-config = get_config()
+# 設定を取得
+settings = get_settings()
+config = settings.graph
+
+# 設定の検証（必要に応じて）
+if settings.openai.api_key:
+    logger.info("OpenAI API key is configured")
+if settings.grafana.url:
+    logger.info(f"Grafana URL is configured: {settings.grafana.url}")
+
+# グラフを作成
 default_graph = create_graph(config=config)
 
 # ========= Graph Repository Setup =========
