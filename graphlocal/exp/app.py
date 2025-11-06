@@ -10,7 +10,8 @@ from fastapi import FastAPI
 
 from config import GraphConfig
 from graph.builder import create_graph
-from api import router, set_graph_instance
+from api import router, set_graph_repository
+from api.repositories.graph_repository import GraphRepository
 
 # ========= Logging =========
 logger = logging.getLogger(__name__)
@@ -33,13 +34,23 @@ def get_config() -> GraphConfig:
 
 # 設定を取得してグラフを作成
 config = get_config()
-graph = create_graph(config=config)
+default_graph = create_graph(config=config)
+
+# ========= Graph Repository Setup =========
+graph_repository = GraphRepository()
+graph_repository.register("default", default_graph)
+
+# 将来的に他のグラフを追加する例:
+# v2_graph = create_graph_v2(config)
+# graph_repository.register("v2_graph", v2_graph)
+# test_graph = create_test_graph()
+# graph_repository.register("test_graph", test_graph)
 
 # ========= FastAPI Application =========
 app = FastAPI()
 
-# グラフインスタンスをルーターに設定
-set_graph_instance(graph)
+# グラフリポジトリをルーターに設定
+set_graph_repository(graph_repository)
 
 # ========= Register Router =========
 app.include_router(router)
